@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_my_apps -> {
-                    // Navigate to my apps
+                    startActivity(Intent(this, MyAppsActivity::class.java))
                     true
                 }
                 R.id.navigation_search -> {

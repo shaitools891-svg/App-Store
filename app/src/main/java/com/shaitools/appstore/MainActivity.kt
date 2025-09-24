@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
             App("App Name 4", "Category", "https://example.com/app4.apk"),
             App("App Name 5", "Category", "https://example.com/app5.apk"),
             App("App Name 6", "Category", "https://example.com/app6.apk"),
-            App("App Name 7", "Category", "https://example.com/app7.apk")
+            App("Dynamic Sound", "An innovative Android application that enhances your notification experience by playing custom, time-based sounds for selected apps.", "file:///media/shakib/HDD/Random Notification Sound/Dynamic-Sounds-v1.0.apk")
         )
         val myApps = listOf(
             App("App Name 8", "Category", "https://example.com/app8.apk"),

@@ -11,8 +11,7 @@ class AppAdapter(private val apps: List<App>, private val onDownloadClick: (App)
     class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val appIcon: ImageView = itemView.findViewById(R.id.appIcon)
         val appName: TextView = itemView.findViewById(R.id.appName)
-        val appDescription: TextView = itemView.findViewById(R.id.appDescription)
-        val downloadButton: Button = itemView.findViewById(R.id.downloadButton)
+        val appCategory: TextView = itemView.findViewById(R.id.appCategory)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -23,8 +22,8 @@ class AppAdapter(private val apps: List<App>, private val onDownloadClick: (App)
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {
         val app = apps[position]
         holder.appName.text = app.name
-        holder.appDescription.text = app.description
-        holder.downloadButton.setOnClickListener { onDownloadClick(app) }
+        holder.appCategory.text = app.description
+        holder.itemView.setOnClickListener { onDownloadClick(app) }
     }
 
     override fun getItemCount() = apps.size

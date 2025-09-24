@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>App Details</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1919e6",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111121",
+            },
+            fontFamily: {
+              display: ["Space Grotesk"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="flex h-full min-h-screen w-full flex-col">
+<header class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-700/50 bg-background-light/80 dark:bg-background-dark/80 p-4 backdrop-blur-sm">
+<button class="flex items-center justify-center p-2 text-gray-700 dark:text-gray-300" onclick="history.back()">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="flex-1 text-center text-lg font-bold text-gray-900 dark:text-white">App Details</h1>
+<div class="w-8"></div>
+</header>
+<main class="flex-1 overflow-y-auto p-4">
+<section class="mb-8">
+<div class="flex items-start gap-4">
+<img alt="App Icon" class="h-24 w-24 rounded-xl object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9Ky11O-CglSA05xsnS4tiV0PUuDuX_6OBrL4rehUYcMIO5R-X0EPdioKFn3bJm3MCswU8TDoPgKbsEUYd0F9RCwsij_bOQFNl0az5EKj9nxDD_cA-uGbWxmZQiorXsq43A6UMzy3iIewbWVqCY4erHlK6wkE-oTpS_K4dP_rApnRii3V4cwksgDQOkuus6R_BnG29ZD-9Zb9TYJOuR-j6wR9HUugboiUMjEiFAWwGpNKVsDN45p3CayKSCgTtLTIQlAFOwXKADrc"/>
+<div class="flex flex-col">
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Math ERROR's Calculator</h2>
+<p class="text-base text-gray-600 dark:text-gray-400">Math ERROR</p>
+<p class="text-sm text-gray-500 dark:text-gray-500">Version 1.2.3</p>
+</div>
+</div>
+</section>
+<section class="mb-8">
+<p class="text-base leading-relaxed text-gray-700 dark:text-gray-300">
+            A powerful calculator app designed by Math ERROR, featuring advanced functions, graphing capabilities, and a user-friendly interface. Perfect for students, engineers, and anyone needing precise calculations.
+          </p>
+</section>
+<section class="mb-8">
+<h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">Screenshots</h3>
+<div class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+<div class="w-9/12 flex-shrink-0 snap-center">
+<img alt="Screenshot 1" class="h-auto w-full rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQdEZYfBYD_J_YyDfDFtDd61i_YlRwsF8k-ewE8-xo8SUDVYgM4JVvLV6k-YKKp26yyNKsNvBeDXy7A9lWfvwURWhfx8q0ckEMR6KsMX3PeZq3wAQgMajgzz8k3nBOMxVIIRyRr4ND9K1nqYf1H6hqJNL8A3JRX4Veagh2PJ6U5aNGa69FF41MQ1yMEt3BTODLlTsbkfWyCH_PdukRdox-LCv269pXq8eX6npbBLrAjI0tycqPCUZk2swIiV7OwtPKi_VVnDCE5Q0"/>
+</div>
+<div class="w-9/12 flex-shrink-0 snap-center">
+<img alt="Screenshot 2" class="h-auto w-full rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhiBMRv7YLQU-jk-KmBMcZCBdATD3iz9SPVFa4nuoLfy0vvNDYDRdzmbCqtXmCVekbgtZpoL8YUK6RVaSttrN7Ro23cqoWa_dtNFB3I_VhyAE3LhRFVAX5M4OD66oSNfriuYpMdfmFx71ZMbLaHERiyaUiFVidLiyfI4SP1MkMNWnFZdJ5a-TfbCnDsjY6BMbHbOFWFVVYtJhSudiPjVHRoMKk_DFwSX1McQAK_OGoF3YG273qdyhwjTspatxSFYh_dqK_0BaSLds"/>
+</div>
+<div class="w-9/12 flex-shrink-0 snap-center">
+<img alt="Screenshot 3" class="h-auto w-full rounded-lg object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYKMvZjtwIN9XSYnmxgB7URzKa1pTgh4CrcEND6bSXAnwDX9tI7PLCjps_80biMHA-eRWeTt0A19qsda9XRAiEjI-KEkR7dKWlraYOJK4Pi4G61g_Usrv20gfXtkvtVEa8UL1APwmC4Ij6_3xFJkaVofyN7NCpfD5paE3RV_fnxMFK7_B9-p6bAG5j_TuLAqqu7dKh08yyABOFfeUbflGwRcwqRjzOl_ipriV4otXpcUcnbozp176IsXrbL7ky1tZnLY0tfRnfshs"/>
+</div>
+</div>
+</section>
+<div class="sticky bottom-4">
+<button class="w-full rounded-lg bg-primary py-3 text-base font-bold text-white shadow-lg transition-transform active:scale-95">Install</button>
+</div>
+</main>
+<nav class="sticky bottom-0 z-10 border-t border-gray-200/50 dark:border-gray-700/50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm">
+<div class="flex items-center justify-around px-2 pt-2 pb-4">
+<a class="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400" href="index.html">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 rounded-full px-4 py-1 text-primary" href="my-apps.html">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">apps</span>
+<span class="text-xs font-bold">Apps</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-gray-500 dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs">Settings</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

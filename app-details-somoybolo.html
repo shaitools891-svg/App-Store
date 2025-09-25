@@ -36,14 +36,45 @@
       min-height: max(884px, 100dvh);
     }
   </style>
-  </head>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const titleElement = document.getElementById('app-title');
+  const text = 'Somoy Bolo Details';
+  let index = 0;
+  const typingSpeed = 75;
+
+  function typeWriter() {
+    if (index < text.length) {
+      titleElement.textContent += text.charAt(index);
+      index++;
+      setTimeout(typeWriter, typingSpeed);
+    } else {
+      // Add blinking cursor
+      const cursor = document.createElement('span');
+      cursor.textContent = '|';
+      cursor.style.animation = 'blink 1s infinite';
+      titleElement.appendChild(cursor);
+    }
+  }
+
+  // Start typing after a short delay
+  setTimeout(typeWriter, 500);
+});
+</script>
+<style>
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+</style>
+   </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
 <div class="flex h-full min-h-screen w-full flex-col">
 <header class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-700/50 bg-background-light/80 dark:bg-background-dark/80 p-4 backdrop-blur-sm">
 <button class="flex items-center justify-center p-2 text-gray-700 dark:text-gray-300" onclick="history.back()">
 <span class="material-symbols-outlined">arrow_back</span>
 </button>
-<h1 class="flex-1 text-center text-lg font-bold text-gray-900 dark:text-white">Somoy Bolo Details</h1>
+<h1 id="app-title" class="flex-1 text-center text-lg font-bold text-gray-900 dark:text-white"></h1>
 <div class="w-8"></div>
 </header>
 <main class="flex-1 overflow-y-auto p-4">

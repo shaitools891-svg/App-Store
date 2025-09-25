@@ -209,3 +209,27 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
    </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+  <canvas id="ballpit-canvas" class="absolute inset-0 z-0"></canvas>
+  <div class="relative z-10 flex flex-col items-center justify-center min-h-screen px-4">
+    <h1 id="app-title" class="shiny-text text-4xl font-bold mb-8"></h1>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full">
+      <img src="/ic_launcher-playstore-autosilent.png" alt="Auto Silent Icon" class="w-24 h-24 mx-auto mb-4 rounded-lg" />
+      <h2 class="text-2xl font-bold text-center mb-4">Auto Silent</h2>
+      <p class="text-gray-600 dark:text-gray-300 mb-4">
+        An Android application that automatically silences your phone during Islamic prayer times, helping you maintain focus and respect during Salah.
+      </p>
+      <ul class="text-sm text-gray-600 dark:text-gray-300 mb-4 space-y-1">
+        <li>• Automatic Silent Mode</li>
+        <li>• Custom Prayer Periods</li>
+        <li>• Beautiful Islamic UI</li>
+        <li>• Multiple Themes</li>
+      </ul>
+      <div class="text-center">
+        <a href="/app-release.apk" download class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+          Download APK
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

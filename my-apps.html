@@ -79,14 +79,26 @@
 </div>
 <script>
 function shareApp(appName) {
-  if (navigator.share) {
-    navigator.share({
-      title: appName,
-      text: `Check out ${appName} on App Store!`,
-      url: window.location.href
+  const installLink = 'https://drive.google.com/file/d/1pQq50jVmUQ6h3-SrF1267qPlkZK1retC/view?usp=drive_link';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(installLink).then(function() {
+      alert('Install link copied to clipboard!');
+    }, function(err) {
+      alert('Failed to copy link: ' + err);
     });
   } else {
-    alert(`Share ${appName}`);
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = installLink;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      alert('Install link copied to clipboard!');
+    } catch (err) {
+      alert('Failed to copy link');
+    }
+    document.body.removeChild(textArea);
   }
 }
 </script>

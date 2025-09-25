@@ -32,20 +32,20 @@ const Page: React.FC = () => {
           {typedText}
           {showCursor && <span className="animate-blink">|</span>}
         </h1>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full">
-          <img src="/ic_launcher-playstore-autosilent.png" alt="Auto Silent Icon" className="w-24 h-24 mx-auto mb-4 rounded-lg" />
-          <h2 className="text-2xl font-bold text-center mb-4">Auto Silent</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-8 max-w-lg w-full">
+          <img src="/ic_launcher-playstore-autosilent.png" alt="Auto Silent Icon" className="w-28 h-28 mx-auto mb-6 rounded-2xl shadow-lg" />
+          <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">Auto Silent</h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-center">
             An Android application that automatically silences your phone during Islamic prayer times, helping you maintain focus and respect during Salah.
           </p>
-          <ul className="text-sm text-gray-600 dark:text-gray-300 mb-4 space-y-1">
-            <li>• Automatic Silent Mode</li>
-            <li>• Custom Prayer Periods</li>
-            <li>• Beautiful Islamic UI</li>
-            <li>• Multiple Themes</li>
+          <ul className="text-sm text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+            <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>Automatic Silent Mode</li>
+            <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>Custom Prayer Periods</li>
+            <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>Beautiful Islamic UI</li>
+            <li className="flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>Multiple Themes</li>
           </ul>
           <div className="text-center">
-            <a href="/app-release.apk" download className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            <a href="/app-release.apk" download className="inline-block bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
               Download APK
             </a>
           </div>

@@ -32,20 +32,20 @@ const Page: React.FC = () => {
           {typedText}
           {showCursor && <span className="animate-blink">|</span>}
         </h1>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full">
-          <img src="/ic_launcher-playstore.png" alt="Random Notification Sound Icon" className="w-24 h-24 mx-auto mb-4 rounded-lg" />
-          <h2 className="text-2xl font-bold text-center mb-4">Random Notification Sound</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 dark:border-gray-700/50 p-8 max-w-lg w-full">
+          <img src="/ic_launcher-playstore.png" alt="Random Notification Sound Icon" className="w-28 h-28 mx-auto mb-6 rounded-2xl shadow-lg" />
+          <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Random Notification Sound</h2>
+          <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-center">
             An innovative Android application that enhances your notification experience by playing custom, time-based sounds for selected apps. Transform mundane notifications into delightful auditory experiences with nature-inspired sounds that change throughout the day.
           </p>
-          <ul className="text-sm text-gray-600 dark:text-gray-300 mb-4 space-y-1">
-            <li>• Time-Based Sound Themes (Morning, Afternoon, Evening, Night, Noon)</li>
-            <li>• App-Specific Customization</li>
-            <li>• Rich Sound Library with nature sounds</li>
-            <li>• Smart Settings and User-Friendly Interface</li>
+          <ul className="text-sm text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+            <li className="flex items-center"><span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>Time-Based Sound Themes (Morning, Afternoon, Evening, Night, Noon)</li>
+            <li className="flex items-center"><span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>App-Specific Customization</li>
+            <li className="flex items-center"><span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>Rich Sound Library with nature sounds</li>
+            <li className="flex items-center"><span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>Smart Settings and User-Friendly Interface</li>
           </ul>
           <div className="text-center">
-            <a href="/app-release.apk" download className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            <a href="/app-release.apk" download className="inline-block bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
               Download APK
             </a>
           </div>

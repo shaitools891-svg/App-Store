@@ -412,6 +412,8 @@ class W {
     this.positionData = new Float32Array(3 * e.count).fill(0);
     this.velocityData = new Float32Array(3 * e.count).fill(0);
     this.sizeData = new Float32Array(e.count).fill(1);
+    this.opacityData = new Float32Array(e.count).fill(1);
+    this.fadeSpeed = 2;
     this.center = new a();
     this.#R();
     this.setSizes();
@@ -515,6 +517,26 @@ class W {
       }
       I.toArray(s, base);
       B.toArray(o, base);
+    }
+    // Fade out balls that hit walls
+    for (let idx = 1; idx < t.count; idx++) {
+      const base = 3 * idx;
+      I.fromArray(s, base);
+      const radius = n[idx];
+      if (Math.abs(I.x) + radius >= t.maxX - 0.01 || Math.abs(I.y) + radius >= t.maxY - 0.01 || Math.abs(I.z) + radius >= t.maxZ - 0.01) {
+        if (opacityData[idx] === 1) opacityData[idx] = 0.99;
+      }
+      opacityData[idx] = Math.max(0, opacityData[idx] - e.delta * fadeSpeed);
+      if (opacityData[idx] === 0) {
+        // reset
+        s[base] = E(2 * t.maxX);
+        s[base + 1] = E(2 * t.maxY);
+        s[base + 2] = E(2 * t.maxZ);
+        o[base] = (Math.random() - 0.5) * 2;
+        o[base + 1] = (Math.random() - 0.5) * 2;
+        o[base + 2] = (Math.random() - 0.5) * 2;
+        opacityData[idx] = 1;
+      }
     }
   }
 }
@@ -641,7 +663,7 @@ class Z extends d {
       if (idx === 0 && this.config.followCursor === false) {
         U.scale.setScalar(0);
       } else {
-        U.scale.setScalar(this.physics.sizeData[idx]);
+        U.scale.setScalar(this.physics.sizeData[idx] * this.physics.opacityData[idx]);
       }
       U.updateMatrix();
       this.setMatrixAt(idx, U.matrix);

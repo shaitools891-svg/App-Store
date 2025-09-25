@@ -60,6 +60,101 @@ document.addEventListener('DOMContentLoaded', function() {
   // Start typing after a short delay
   setTimeout(typeWriter, 500);
 });
+
+// Ballpit animation
+document.addEventListener('DOMContentLoaded', function() {
+  const canvas = document.getElementById('ballpit-canvas');
+  const ctx = canvas.getContext('2d');
+  let balls = [];
+  const ballCount = 200;
+  const gravity = 0.7;
+  const friction = 0.8;
+  const wallBounce = 0.95;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function createBalls() {
+    balls = [];
+    for (let i = 0; i < ballCount; i++) {
+      balls.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+        radius: Math.random() * 5 + 2,
+        color: `hsl(${Math.random() * 360}, 70%, 50%)`
+      });
+    }
+  }
+
+  function updateBalls() {
+    balls.forEach(ball => {
+      ball.vy += gravity;
+      ball.vx *= friction;
+      ball.vy *= friction;
+
+      ball.x += ball.vx;
+      ball.y += ball.vy;
+
+      // Bounce off walls
+      if (ball.x - ball.radius < 0 || ball.x + ball.radius > canvas.width) {
+        ball.vx *= -wallBounce;
+        ball.x = Math.max(ball.radius, Math.min(canvas.width - ball.radius, ball.x));
+      }
+      if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+        ball.vy *= -wallBounce;
+        ball.y = Math.max(ball.radius, Math.min(canvas.height - ball.radius, ball.y));
+      }
+
+      // Ball collisions
+      balls.forEach(otherBall => {
+        if (ball !== otherBall) {
+          const dx = otherBall.x - ball.x;
+          const dy = otherBall.y - ball.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const minDistance = ball.radius + otherBall.radius;
+
+          if (distance < minDistance) {
+            const angle = Math.atan2(dy, dx);
+            const targetX = ball.x + Math.cos(angle) * minDistance;
+            const targetY = ball.y + Math.sin(angle) * minDistance;
+            const ax = (targetX - otherBall.x) * 0.05;
+            const ay = (targetY - otherBall.y) * 0.05;
+
+            ball.vx -= ax;
+            ball.vy -= ay;
+            otherBall.vx += ax;
+            otherBall.vy += ay;
+          }
+        }
+      });
+    });
+  }
+
+  function drawBalls() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    balls.forEach(ball => {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = ball.color;
+      ctx.fill();
+    });
+  }
+
+  function animate() {
+    updateBalls();
+    drawBalls();
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  createBalls();
+  animate();
+});
 </script>
 <style>
 @keyframes blink {
@@ -114,6 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
    </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<canvas id="ballpit-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></canvas>
 <div class="flex h-full min-h-screen w-full flex-col">
 <header class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-700/50 bg-background-light/80 dark:bg-background-dark/80 p-4 backdrop-blur-sm">
 <button class="flex items-center justify-center p-2 text-gray-700 dark:text-gray-300" onclick="history.back()">

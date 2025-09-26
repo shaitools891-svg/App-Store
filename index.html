@@ -28,7 +28,7 @@
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script type="module" src="galaxy.js"></script>
+  <script src="galaxy.js"></script>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200 min-h-screen relative overflow-hidden">
   <div id="galaxy-container" class="absolute inset-0 z-0"></div>
@@ -87,10 +87,9 @@
       }
     }
   </style>
-  <script type="module">
-    import { initGalaxy } from './galaxy.js';
+  <script>
     const container = document.getElementById('galaxy-container');
-    initGalaxy(container, {
+    window.initGalaxy(container, {
       mouseRepulsion: true,
       mouseInteraction: true,
       density: 1.5,

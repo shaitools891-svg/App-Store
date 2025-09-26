@@ -1,6 +1,6 @@
 const THREE = window.THREE;
 
-export function initGalaxy(container, options = {}) {
+window.initGalaxy = function(container, options = {}) {
   const {
     density = 1.5,
     hueShift = 240,

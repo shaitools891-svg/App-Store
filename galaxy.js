@@ -25,16 +25,15 @@ window.initGalaxy = function(container, options = {}) {
   for (let i = 0; i < starCount; i++) {
     const i3 = i * 3;
     const radius = Math.random() * 100 + 50;
-    const spinAngle = Math.random() * Math.PI * 2;
-    const branchAngle = Math.random() * Math.PI * 2;
+    const angle = Math.random() * Math.PI * 2;
 
     const randomX = (Math.random() - 0.5) * 20;
     const randomY = (Math.random() - 0.5) * 20;
     const randomZ = (Math.random() - 0.5) * 20;
 
-    positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+    positions[i3] = Math.cos(angle) * radius + randomX;
     positions[i3 + 1] = randomY;
-    positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+    positions[i3 + 2] = Math.sin(angle) * radius + randomZ;
 
     const color = new THREE.Color();
     color.setHSL((Math.random() + hueShift / 360) % 1, saturation, 0.5 + Math.random() * 0.5);

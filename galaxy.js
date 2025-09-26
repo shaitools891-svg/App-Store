@@ -9,13 +9,15 @@ window.initGalaxy = function(container, options = {}) {
     saturation = 0.0,
     mouseRepulsion = true,
     repulsionStrength = 2,
-    rotationSpeed = 0.1,
+    rotationSpeed = 0.0, // Disabled rotation for performance
     starSpeed = 0.5,
     speed = 1.0,
-    twinkleIntensity = 0.3,
+    twinkleIntensity = 0.5, // Increased for better glitter effect
     autoCenterRepulsion = 0,
     focal = [0.5, 0.5],
-    rotation = [1.0, 0.0]
+    rotation = [1.0, 0.0],
+    pulseIntensity = 0.3, // New: controls pulsing strength
+    glitterChance = 0.15 // New: chance for a star to glitter
   } = options;
 
   const scene = new THREE.Scene();
@@ -27,7 +29,7 @@ window.initGalaxy = function(container, options = {}) {
   renderer.setSize(container.offsetWidth, container.offsetHeight);
   container.appendChild(renderer.domElement);
 
-  // Shader code converted from your OGL version
+  // Optimized shader code
   const vertexShader = `
     varying vec2 vUv;
     void main() {
@@ -56,13 +58,14 @@ window.initGalaxy = function(container, options = {}) {
     uniform float uRepulsionStrength;
     uniform float uMouseActiveFactor;
     uniform float uAutoCenterRepulsion;
+    uniform float uPulseIntensity;
+    uniform float uGlitterChance;
     
     varying vec2 vUv;
     
-    #define NUM_LAYER 4.0
+    #define NUM_LAYER 3.0  // Reduced layers for performance
     #define STAR_COLOR_CUTOFF 0.2
     #define MAT45 mat2(0.7071, -0.7071, 0.7071, 0.7071)
-    #define PERIOD 3.0
     
     float Hash21(vec2 p) {
       p = fract(p * vec2(123.34, 456.21));
@@ -84,25 +87,30 @@ window.initGalaxy = function(container, options = {}) {
       return 2.0 * (1.0 - smoothstep(0.0, 1.0, abs(2.0 * t - 1.0))) - 1.0;
     }
     
+    // Smooth noise function for more natural effects
+    float smoothNoise(float x) {
+      return sin(x) * 0.5 + 0.5;
+    }
+    
     vec3 hsv2rgb(vec3 c) {
       vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
       vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
       return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
     }
     
-    float Star(vec2 uv, float flare) {
+    float Star(vec2 uv, float flare, float pulse) {
       float d = length(uv);
-      float m = (0.05 * uGlowIntensity) / d;
+      float m = (0.05 * uGlowIntensity * pulse) / d;
       float rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
-      m += rays * flare * uGlowIntensity;
+      m += rays * flare * uGlowIntensity * pulse;
       uv *= MAT45;
       rays = smoothstep(0.0, 1.0, 1.0 - abs(uv.x * uv.y * 1000.0));
-      m += rays * 0.3 * flare * uGlowIntensity;
+      m += rays * 0.3 * flare * uGlowIntensity * pulse;
       m *= smoothstep(1.0, 0.2, d);
       return m;
     }
     
-    vec3 StarLayer(vec2 uv) {
+    vec3 StarLayer(vec2 uv, float layerDepth) {
       vec3 col = vec3(0.0);
       
       vec2 gv = fract(uv) - 0.5; 
@@ -114,8 +122,35 @@ window.initGalaxy = function(container, options = {}) {
           vec2 si = id + vec2(float(x), float(y));
           float seed = Hash21(si);
           float size = fract(seed * 345.32);
-          float glossLocal = tri(uStarSpeed / (PERIOD * seed + 1.0));
-          float flareSize = smoothstep(0.9, 1.0, size) * glossLocal;
+          
+          // Static position - no more movement for performance
+          vec2 staticPos = vec2(
+            Hash21(si + 10.0) - 0.5,
+            Hash21(si + 20.0) - 0.5
+          ) * 0.3;
+          
+          // Glitter effect - only some stars glitter
+          float glitterSeed = Hash21(si + 100.0);
+          bool shouldGlitter = glitterSeed < uGlitterChance;
+          
+          float glitter = 1.0;
+          if (shouldGlitter) {
+            // Fast glitter effect
+            float glitterTime = uTime * uSpeed * (2.0 + seed * 3.0);
+            glitter = smoothNoise(glitterTime) * 0.5 + 0.5;
+            glitter = mix(0.3, 1.5, glitter);
+          }
+          
+          // Pulse effect - slower, more subtle
+          float pulseSeed = Hash21(si + 200.0);
+          float pulseFreq = 0.5 + pulseSeed * 1.5; // Vary pulse frequency
+          float pulse = smoothNoise(uTime * uSpeed * pulseFreq + seed * 6.28) * 0.5 + 0.5;
+          pulse = mix(1.0 - uPulseIntensity, 1.0 + uPulseIntensity, pulse);
+          
+          // Combine glitter and pulse
+          float finalIntensity = glitter * pulse;
+          
+          float flareSize = smoothstep(0.9, 1.0, size) * finalIntensity;
           
           float red = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 1.0)) + STAR_COLOR_CUTOFF;
           float blu = smoothstep(STAR_COLOR_CUTOFF, 1.0, Hash21(si + 3.0)) + STAR_COLOR_CUTOFF;
@@ -128,16 +163,15 @@ window.initGalaxy = function(container, options = {}) {
           float val = max(max(base.r, base.g), base.b);
           base = hsv2rgb(vec3(hue, sat, val));
           
-          vec2 pad = vec2(tris(seed * 34.0 + uTime * uSpeed / 10.0), tris(seed * 38.0 + uTime * uSpeed / 30.0)) - 0.5;
-          
-          float star = Star(gv - offset - pad, flareSize);
+          float star = Star(gv - offset - staticPos, flareSize, finalIntensity);
           vec3 color = base;
           
-          float twinkle = trisn(uTime * uSpeed + seed * 6.2831) * 0.5 + 1.0;
-          twinkle = mix(1.0, twinkle, uTwinkleIntensity);
+          // Gentle twinkle effect
+          float twinkle = smoothNoise(uTime * uSpeed * 0.3 + seed * 6.2831) * 0.5 + 0.5;
+          twinkle = mix(1.0 - uTwinkleIntensity * 0.3, 1.0 + uTwinkleIntensity * 0.3, twinkle);
           star *= twinkle;
           
-          col += star * size * color;
+          col += star * size * color * finalIntensity;
         }
       }
       
@@ -165,19 +199,16 @@ window.initGalaxy = function(container, options = {}) {
         uv += mouseOffset;
       }
       
-      float autoRotAngle = uTime * uRotationSpeed;
-      mat2 autoRot = mat2(cos(autoRotAngle), -sin(autoRotAngle), sin(autoRotAngle), cos(autoRotAngle));
-      uv = autoRot * uv;
-      
+      // Static rotation - only apply initial rotation, no continuous spinning
       uv = mat2(uRotation.x, -uRotation.y, uRotation.y, uRotation.x) * uv;
       
       vec3 col = vec3(0.0);
       
       for (float i = 0.0; i < 1.0; i += 1.0 / NUM_LAYER) {
-        float depth = fract(i + uStarSpeed * uSpeed);
-        float scale = mix(20.0 * uDensity, 0.5 * uDensity, depth);
-        float fade = depth * smoothstep(1.0, 0.9, depth);
-        col += StarLayer(uv * scale + i * 453.32) * fade;
+        float depth = fract(i);
+        float scale = mix(15.0 * uDensity, 0.8 * uDensity, depth);
+        float fade = (1.0 - depth) * smoothstep(0.0, 0.1, depth);
+        col += StarLayer(uv * scale + i * 453.32, depth) * fade;
       }
       
       float alpha = length(col);
@@ -207,10 +238,12 @@ window.initGalaxy = function(container, options = {}) {
       uSaturation: { value: saturation },
       uMouseRepulsion: { value: mouseRepulsion },
       uTwinkleIntensity: { value: twinkleIntensity },
-      uRotationSpeed: { value: rotationSpeed },
+      uRotationSpeed: { value: 0.0 }, // Disabled
       uRepulsionStrength: { value: repulsionStrength },
       uMouseActiveFactor: { value: 0.0 },
-      uAutoCenterRepulsion: { value: autoCenterRepulsion }
+      uAutoCenterRepulsion: { value: autoCenterRepulsion },
+      uPulseIntensity: { value: options.pulseIntensity || 0.3 },
+      uGlitterChance: { value: options.glitterChance || 0.15 }
     }
   });
 
@@ -242,16 +275,25 @@ window.initGalaxy = function(container, options = {}) {
     container.addEventListener('mouseleave', onMouseLeave);
   }
 
-  // Animation loop
+  // Optimized animation loop
+  let lastTime = 0;
+  const targetFPS = 60;
+  const frameInterval = 1000 / targetFPS;
+
   function animate(time) {
     requestAnimationFrame(animate);
     
-    // Update time
-    material.uniforms.uTime.value = time * 0.001;
-    material.uniforms.uStarSpeed.value = (time * 0.001 * starSpeed) / 10.0;
+    // Frame rate limiting for better performance
+    if (time - lastTime < frameInterval) {
+      return;
+    }
+    lastTime = time;
     
-    // Smooth mouse interpolation
-    const lerpFactor = 0.05;
+    // Update time (slower updates for better performance)
+    material.uniforms.uTime.value = time * 0.0005; // Reduced time scale
+    
+    // Smooth mouse interpolation with reduced frequency
+    const lerpFactor = 0.03; // Slower interpolation
     smoothMousePos.x += (targetMousePos.x - smoothMousePos.x) * lerpFactor;
     smoothMousePos.y += (targetMousePos.y - smoothMousePos.y) * lerpFactor;
     smoothMouseActive += (targetMouseActive - smoothMouseActive) * lerpFactor;

@@ -51,8 +51,9 @@ window.initGalaxy = function(container, options = {}) {
   canvas.width = 32;
   canvas.height = 32;
   const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 32, 32);
   ctx.beginPath();
-  ctx.arc(16, 16, 15, 0, Math.PI * 2);
+  ctx.arc(16, 16, 12, 0, Math.PI * 2);
   ctx.fillStyle = 'white';
   ctx.fill();
 

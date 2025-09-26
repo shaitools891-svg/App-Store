@@ -124,7 +124,7 @@ window.initGalaxy = function(container, options = {}) {
           
           float hue = atan(base.g - base.r, base.b - base.r) / (2.0 * 3.14159) + 0.5;
           hue = fract(hue + uHueShift / 360.0);
-          float sat = 1.0;
+          float sat = length(base - vec3(dot(base, vec3(0.299, 0.587, 0.114)))) * uSaturation;
           float val = max(max(base.r, base.g), base.b);
           base = hsv2rgb(vec3(hue, sat, val));
           
@@ -181,7 +181,8 @@ window.initGalaxy = function(container, options = {}) {
       }
       
       float alpha = length(col);
-      alpha = min(alpha * 2.0, 1.0);
+      alpha = smoothstep(0.0, 0.3, alpha);
+      alpha = min(alpha, 1.0);
       gl_FragColor = vec4(col, alpha);
     }
   `;
@@ -191,7 +192,7 @@ window.initGalaxy = function(container, options = {}) {
     vertexShader,
     fragmentShader,
     transparent: true,
-    blending: THREE.NormalBlending,
+    blending: THREE.AdditiveBlending,
     uniforms: {
       uTime: { value: 0 },
       uResolution: { value: new THREE.Vector3(container.offsetWidth, container.offsetHeight, container.offsetWidth / container.offsetHeight) },

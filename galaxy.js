@@ -26,7 +26,7 @@ window.initGalaxy = function(container, options = {}) {
     const i3 = i * 3;
     const radius = Math.random() * 100 + 50;
     const spinAngle = Math.random() * Math.PI * 2;
-    const branchAngle = (i % 4) / 4 * Math.PI * 2;
+    const branchAngle = Math.random() * Math.PI * 2;
 
     const randomX = (Math.random() - 0.5) * 20;
     const randomY = (Math.random() - 0.5) * 20;

@@ -46,12 +46,27 @@ window.initGalaxy = function(container, options = {}) {
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
+  // Create a circle texture for circular stars
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath();
+  ctx.arc(16, 16, 15, 0, Math.PI * 2);
+  ctx.fillStyle = 'white';
+  ctx.fill();
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+
   const material = new THREE.PointsMaterial({
-    size: 1,
+    size: 2,
     vertexColors: true,
     transparent: true,
     opacity: glowIntensity,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
+    map: texture,
+    alphaTest: 0.1
   });
 
   const points = new THREE.Points(geometry, material);

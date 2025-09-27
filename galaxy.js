@@ -193,6 +193,12 @@ const translate = (out, a, v) => {
 };
 
 window.initGalaxy = function(container, options = {}) {
+  // Validate container
+  if (!container) {
+    console.error('Galaxy: Container element is required');
+    return null;
+  }
+
   const canvas = document.createElement('canvas');
   canvas.style.width = '100%';
   canvas.style.height = '100%';
@@ -201,22 +207,25 @@ window.initGalaxy = function(container, options = {}) {
 
   const mouseRef = { x: 0, y: 0 };
 
-  const particleCount = options.density ? options.density * 100 : 200;
-  const particleSpread = 10;
-  const speed = 0.1;
-  const particleColors = ['#4f46e5', '#06b6d4', '#8b5cf6', '#ec4899'];
-  const moveParticlesOnHover = options.mouseInteraction !== false;
-  const particleHoverFactor = 1;
-  const alphaParticles = false;
-  const particleBaseSize = options.glowIntensity ? options.glowIntensity * 20 : 100;
-  const sizeRandomness = 1;
-  const cameraDistance = 20;
-  const disableRotation = false;
+  // Configuration with defaults
+  const config = {
+    particleCount: options.density ? Math.floor(options.density * 100) : 200,
+    particleSpread: options.spread || 10,
+    speed: options.speed || 0.1,
+    particleColors: options.colors || ['#4f46e5', '#06b6d4', '#8b5cf6', '#ec4899'],
+    moveParticlesOnHover: options.mouseInteraction !== false,
+    particleHoverFactor: options.hoverFactor || 1,
+    alphaParticles: options.alphaParticles || false,
+    particleBaseSize: options.glowIntensity ? options.glowIntensity * 20 : 100,
+    sizeRandomness: options.sizeRandomness || 1,
+    cameraDistance: options.cameraDistance || 20,
+    disableRotation: options.disableRotation || false
+  };
 
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
   if (!gl) {
-    console.error('WebGL not supported');
-    return;
+    console.error('Galaxy: WebGL not supported');
+    return null;
   }
 
   // Set up WebGL state
@@ -224,13 +233,14 @@ window.initGalaxy = function(container, options = {}) {
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   gl.clearColor(0, 0, 0, 0);
 
-  // Create shader program
+  // Create shader program with error handling
   const createShader = (type, source) => {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+      console.error('Galaxy: Shader compilation error:', gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
       return null;
     }
     return shader;
@@ -239,34 +249,41 @@ window.initGalaxy = function(container, options = {}) {
   const vertexShaderObj = createShader(gl.VERTEX_SHADER, vertexShader);
   const fragmentShaderObj = createShader(gl.FRAGMENT_SHADER, fragmentShader);
 
+  if (!vertexShaderObj || !fragmentShaderObj) {
+    console.error('Galaxy: Failed to create shaders');
+    return null;
+  }
+
   const program = gl.createProgram();
   gl.attachShader(program, vertexShaderObj);
   gl.attachShader(program, fragmentShaderObj);
   gl.linkProgram(program);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('Program linking error:', gl.getProgramInfoLog(program));
-    return;
+    console.error('Galaxy: Program linking error:', gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    return null;
   }
 
   gl.useProgram(program);
 
   // Get attribute and uniform locations
-  const positionLocation = gl.getAttribLocation(program, 'position');
-  const randomLocation = gl.getAttribLocation(program, 'random');
-  const colorLocation = gl.getAttribLocation(program, 'color');
-  
-  const modelMatrixLocation = gl.getUniformLocation(program, 'modelMatrix');
-  const viewMatrixLocation = gl.getUniformLocation(program, 'viewMatrix');
-  const projectionMatrixLocation = gl.getUniformLocation(program, 'projectionMatrix');
-  const uTimeLocation = gl.getUniformLocation(program, 'uTime');
-  const uSpreadLocation = gl.getUniformLocation(program, 'uSpread');
-  const uBaseSizeLocation = gl.getUniformLocation(program, 'uBaseSize');
-  const uSizeRandomnessLocation = gl.getUniformLocation(program, 'uSizeRandomness');
-  const uAlphaParticlesLocation = gl.getUniformLocation(program, 'uAlphaParticles');
+  const locations = {
+    position: gl.getAttribLocation(program, 'position'),
+    random: gl.getAttribLocation(program, 'random'),
+    color: gl.getAttribLocation(program, 'color'),
+    modelMatrix: gl.getUniformLocation(program, 'modelMatrix'),
+    viewMatrix: gl.getUniformLocation(program, 'viewMatrix'),
+    projectionMatrix: gl.getUniformLocation(program, 'projectionMatrix'),
+    uTime: gl.getUniformLocation(program, 'uTime'),
+    uSpread: gl.getUniformLocation(program, 'uSpread'),
+    uBaseSize: gl.getUniformLocation(program, 'uBaseSize'),
+    uSizeRandomness: gl.getUniformLocation(program, 'uSizeRandomness'),
+    uAlphaParticles: gl.getUniformLocation(program, 'uAlphaParticles')
+  };
 
   // Generate particle data
-  const count = particleCount;
+  const count = config.particleCount;
   const positions = new Float32Array(count * 3);
   const randoms = new Float32Array(count * 4);
   const colors = new Float32Array(count * 3);
@@ -284,7 +301,8 @@ window.initGalaxy = function(container, options = {}) {
     positions.set([x * r, y * r, z * r], i * 3);
     randoms.set([Math.random(), Math.random(), Math.random(), Math.random()], i * 4);
     
-    const col = hexToRgb(particleColors[Math.floor(Math.random() * particleColors.length)]);
+    const colorIndex = Math.floor(Math.random() * config.particleColors.length);
+    const col = hexToRgb(config.particleColors[colorIndex]);
     colors.set(col, i * 3);
   }
 
@@ -292,20 +310,20 @@ window.initGalaxy = function(container, options = {}) {
   const positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(positionLocation);
-  gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(locations.position);
+  gl.vertexAttribPointer(locations.position, 3, gl.FLOAT, false, 0, 0);
 
   const randomBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, randomBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, randoms, gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(randomLocation);
-  gl.vertexAttribPointer(randomLocation, 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(locations.random);
+  gl.vertexAttribPointer(locations.random, 4, gl.FLOAT, false, 0, 0);
 
   const colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(colorLocation);
-  gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(locations.color);
+  gl.vertexAttribPointer(locations.color, 3, gl.FLOAT, false, 0, 0);
 
   // Set up matrices
   const modelMatrix = createMatrix4();
@@ -314,29 +332,33 @@ window.initGalaxy = function(container, options = {}) {
   const tempMatrix = createMatrix4();
 
   identity(modelMatrix);
-  
-  // Set up camera
-  lookAt(viewMatrix, [0, 0, cameraDistance], [0, 0, 0], [0, 1, 0]);
+  lookAt(viewMatrix, [0, 0, config.cameraDistance], [0, 0, 0], [0, 1, 0]);
 
   // Set static uniforms
-  gl.uniform1f(uSpreadLocation, particleSpread);
-  gl.uniform1f(uBaseSizeLocation, particleBaseSize);
-  gl.uniform1f(uSizeRandomnessLocation, sizeRandomness);
-  gl.uniform1f(uAlphaParticlesLocation, alphaParticles ? 1 : 0);
+  gl.uniform1f(locations.uSpread, config.particleSpread);
+  gl.uniform1f(locations.uBaseSize, config.particleBaseSize);
+  gl.uniform1f(locations.uSizeRandomness, config.sizeRandomness);
+  gl.uniform1f(locations.uAlphaParticles, config.alphaParticles ? 1 : 0);
 
   const resize = () => {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-    gl.viewport(0, 0, canvas.width, canvas.height);
+    const rect = container.getBoundingClientRect();
+    const width = rect.width * window.devicePixelRatio;
+    const height = rect.height * window.devicePixelRatio;
     
-    const aspect = canvas.width / canvas.height;
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    
+    gl.viewport(0, 0, width, height);
+    
+    const aspect = width / height;
     perspective(projectionMatrix, Math.PI / 12, aspect, 0.1, 100);
-    gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
+    gl.uniformMatrix4fv(locations.projectionMatrix, false, projectionMatrix);
   };
 
-  window.addEventListener('resize', resize);
-  resize();
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(container);
 
   const handleMouseMove = (e) => {
     const rect = canvas.getBoundingClientRect();
@@ -346,7 +368,7 @@ window.initGalaxy = function(container, options = {}) {
     mouseRef.y = y;
   };
 
-  if (moveParticlesOnHover) {
+  if (config.moveParticlesOnHover) {
     canvas.addEventListener('mousemove', handleMouseMove);
   }
 
@@ -360,7 +382,7 @@ window.initGalaxy = function(container, options = {}) {
     
     const delta = currentTime - lastTime;
     lastTime = currentTime;
-    elapsed += delta * speed;
+    elapsed += delta * config.speed;
 
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -368,19 +390,19 @@ window.initGalaxy = function(container, options = {}) {
     identity(modelMatrix);
 
     // Apply mouse hover effect
-    if (moveParticlesOnHover) {
+    if (config.moveParticlesOnHover) {
       translate(modelMatrix, modelMatrix, [
-        -mouseRef.x * particleHoverFactor,
-        -mouseRef.y * particleHoverFactor,
+        -mouseRef.x * config.particleHoverFactor,
+        -mouseRef.y * config.particleHoverFactor,
         0
       ]);
     }
 
     // Apply rotation
-    if (!disableRotation) {
+    if (!config.disableRotation) {
       rotation.x = Math.sin(elapsed * 0.0002) * 0.1;
       rotation.y = Math.cos(elapsed * 0.0005) * 0.15;
-      rotation.z += 0.01 * speed;
+      rotation.z += 0.01 * config.speed;
 
       rotateX(tempMatrix, modelMatrix, rotation.x);
       rotateY(modelMatrix, tempMatrix, rotation.y);
@@ -389,25 +411,46 @@ window.initGalaxy = function(container, options = {}) {
     }
 
     // Update uniforms
-    gl.uniform1f(uTimeLocation, elapsed * 0.001);
-    gl.uniformMatrix4fv(modelMatrixLocation, false, modelMatrix);
-    gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
+    gl.uniform1f(locations.uTime, elapsed * 0.001);
+    gl.uniformMatrix4fv(locations.modelMatrix, false, modelMatrix);
+    gl.uniformMatrix4fv(locations.viewMatrix, false, viewMatrix);
 
     // Draw particles
     gl.drawArrays(gl.POINTS, 0, count);
   };
 
+  // Initial resize and start animation
+  setTimeout(resize, 0);
   animationFrameId = requestAnimationFrame(animate);
 
   // Return cleanup function
   return () => {
-    window.removeEventListener('resize', resize);
-    if (moveParticlesOnHover) {
+    if (resizeObserver) {
+      resizeObserver.disconnect();
+    }
+    if (config.moveParticlesOnHover) {
       canvas.removeEventListener('mousemove', handleMouseMove);
     }
     cancelAnimationFrame(animationFrameId);
+    
+    // Clean up WebGL resources
+    gl.deleteBuffer(positionBuffer);
+    gl.deleteBuffer(randomBuffer);
+    gl.deleteBuffer(colorBuffer);
+    gl.deleteProgram(program);
+    gl.deleteShader(vertexShaderObj);
+    gl.deleteShader(fragmentShaderObj);
+    
     if (canvas.parentNode) {
       canvas.parentNode.removeChild(canvas);
     }
   };
 };
+
+// Usage example:
+// const cleanup = window.initGalaxy(document.getElementById('galaxy-container'), {
+//   density: 2,           // Particle density multiplier
+//   glowIntensity: 5,     // Particle glow intensity
+//   mouseInteraction: true, // Enable mouse interaction
+//   colors: ['#ff0000', '#00ff00', '#0000ff'] // Custom colors
+// });
